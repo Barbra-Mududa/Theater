@@ -1,4 +1,6 @@
 class ProductionsController < ApplicationController
+    wrap_parameters format: []
+    
     def index
         render json: Production.all, status: :ok
     end
@@ -11,4 +13,15 @@ class ProductionsController < ApplicationController
             render json: {error: 'production not found'}, status: :not_found
         end
     end 
+
+    def create
+        production = Production.create(params)
+        render json: production, status: :created
+    end
+
+    private
+
+    def production_params
+        params.perit(:title, :genre, :budget, :image, :director, :ongoing)
+    end
 end
