@@ -1,4 +1,5 @@
 class ProductionsController < ApplicationController
+rescue_from ActiveRecord::RecordInvalid, with: :render_unprocessable_entity
     wrap_parameters format: []
 
     def index
@@ -19,6 +20,12 @@ class ProductionsController < ApplicationController
     def create
         production = Production.create(production_params)
         render json: production, status: :created
+    
+        # if production.valid?
+        # render json: production, status: :created
+        # else
+        #     render json: production.errors.full_messages
+        # end
     end
 
     def update
@@ -45,6 +52,10 @@ class ProductionsController < ApplicationController
     end
 
     private
+
+    def render_unprocessable_entity(invalid)
+        render json:{error: invalid.record.errors}, status: :unprocessable_entity
+    end
 
     def production_params
         params.permit(:title, :genre, :budget, :image, :director, :ongoing)
